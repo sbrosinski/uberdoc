@@ -20,6 +20,8 @@ Tested on MacOS and Windows.
 
     styles                  --> optional css styles etc.
     templates               --> html and latex templates (for PDF conversion)
+    
+    out                     --> your doc ends up here
 
 ## Commands
 
