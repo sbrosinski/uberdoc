@@ -6,6 +6,8 @@ I use it to write technical documents. Default output is HTML. Optionally it gen
 
 The provided default templates are just a starting point. These should be personalized for custom, e.g. client specific documents.
 
+Tested on MacOS and Windows.
+
 ## Directory Layout
 
     src                     --> contains the documents chapters
