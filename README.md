@@ -36,6 +36,8 @@ The provided default templates are just a starting point. These should be person
     --help : usage info
     --pdf : create a PDF in addition to HTML
     --verbose : show what params pandoc was called with
+    
+    $ ./uberdoc.py clean
 
 ## Configuration
 
