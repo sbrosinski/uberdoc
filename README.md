@@ -8,7 +8,7 @@ The provided default templates are just a starting point. These should be person
 
 ## Directory Layout
 
-    src                     --> contains the documents chapters
+    src                     --> contains the document's chapters
         chapter1
             img             --> optional image files for this chapter
             chapter1.md     --> markdown content for this chapter
