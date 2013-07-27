@@ -20,6 +20,9 @@ __version__ = '1.0'
 class Config:
     """Encapsulates config file access"""    
     def __init__(self, file_name):
+        if not os.path.isfile(file_name):
+            print >> sys.stderr, 'Error: Could not find config file: ' + file_name 
+            sys.exit(1)        
         self.conf = ConfigParser.ConfigParser()
         self.conf.readfp(open(file_name))
 
@@ -69,6 +72,7 @@ def generate_doc(files):
     build_cmd = ' '.join([
         _conf.pandoc_cmd, 
         _conf.pandoc_options_html, 
+        ' -V VERSION:"{0}" '.format(version()),
         file_list, 
         '-o', 
         out_file + '.html'])
@@ -79,6 +83,7 @@ def generate_doc(files):
         build_cmd = ' '.join([
             _conf.pandoc_cmd, 
             _conf.pandoc_options_pdf, 
+            ' -V VERSION:"{0}" '.format(version()),
             file_list, 
             '-o', 
             out_file + '.pdf'])
@@ -114,7 +119,7 @@ def read_toc():
     """Reads the toc file containing the chapter list."""
     with open(os.path.join(_conf.src_dir, _conf.toc_filename)) as f:
         lines = f.read().splitlines()
-    return lines
+    return [line for line in lines if not line.startswith('#')]
 
 def build():
     """Calls all steps of the doc build process"""
@@ -134,6 +139,9 @@ def build():
     generate_doc(generate_file_list(toc))
     
     print 'Done ...'
+
+def version():
+    return cmd('git log -1 --format="%cd (%h)" --date=short') 
 
 def create():
     """Generates an example src dir structure, for new doc projects."""
