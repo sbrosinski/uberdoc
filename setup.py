@@ -1,10 +1,10 @@
 #from distutils.core import setup
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name = 'uberdoc',
-    py_modules = ['uberdoc'],
     version = '1.0.0',
+    packages = find_packages('src'),
     description = 'Pandoc wrapper for large, multi-chapter documents.',
     author='Stephan Brosinski',
     author_email='sbrosinski@gmail.com',
@@ -16,9 +16,12 @@ setup(
         "Environment :: Other Environment",
         "Intended Audience :: Developers"
         ],
+    package_dir={'':'src'},
+    package_data={'uberdoc': ['templates/*.*', 'style/*.*', 'uberdoc.cfg']},
+    include_package_data = True,
     entry_points = {
     	'console_scripts': [
-    		'uberdoc = uberdoc:main'
+    		'uberdoc = uberdoc.uberdoc:main'
     	]
     }
 )
