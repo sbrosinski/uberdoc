@@ -6,6 +6,8 @@ I use it to write technical documents. Default output is HTML. Optionally it gen
 
 The provided default templates are just a starting point. These should be personalized for custom, e.g. client specific documents.
 
+Tested on MacOS and Windows.
+
 ## Directory Layout
 
     src                     --> contains the document's chapters
@@ -18,6 +20,8 @@ The provided default templates are just a starting point. These should be person
 
     styles                  --> optional css styles etc.
     templates               --> html and latex templates (for PDF conversion)
+    
+    out                     --> your doc ends up here
 
 ## Commands
 
@@ -36,6 +40,8 @@ The provided default templates are just a starting point. These should be person
     --help : usage info
     --pdf : create a PDF in addition to HTML
     --verbose : show what params pandoc was called with
+    
+    $ ./uberdoc.py clean
 
 ## Configuration
 
