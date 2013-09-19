@@ -39,11 +39,12 @@ def cmd(cmdStr, verbose = False, cwd = '.'):
     by cwd
     """
     if verbose: 
-        print 'cmd: ' + cmdStr
+        print 'cmd: ' + cmdStr + ' in cwd ' + cwd
+        print 'cmd: %s' % shlex.split(cmdStr, posix = os.name == 'posix')
 
-    process = subprocess.Popen(shlex.split(cmdStr),
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
+    process = subprocess.Popen(shlex.split(cmdStr, posix = os.name == 'posix'),
+                               stdout = subprocess.PIPE,
+                               stderr = subprocess.PIPE,
                                cwd = cwd)
 
     (stdout, stderr) = process.communicate()
@@ -89,11 +90,12 @@ def generate_doc(files):
             out_file + '.pdf'])
         cmd(build_cmd, cwd = _conf.src_dir, verbose = _args.verbose)  
 
-def clean():
+def clean(recreate_out = False):
     """Recreates out_dir""" 
     if os.path.isdir(_conf.out_dir):
         shutil.rmtree(_conf.out_dir)
-    os.mkdir(_conf.out_dir)
+    if recreate_out:
+        os.mkdir(_conf.out_dir)
 
 def copy_dependencies(toc_lines):
     """Copies the contents of style_dir (e.g. css files) to out_dir.
@@ -127,7 +129,7 @@ def build():
     check_env()
 
     print 'Cleaning ...'
-    clean(); 
+    clean(recreate_out = True) 
 
     print 'Parse toc ...'
     toc = read_toc()
@@ -187,6 +189,9 @@ def main():
         epilog = "Now start writing and stop messing with your tools!")
 
     subparsers = parser.add_subparsers(help = 'sub-command help')
+
+    parser_clean = subparsers.add_parser('clean', help = 'removes build artifacts')
+    parser_clean.set_defaults(func = clean)
 
     parser_create = subparsers.add_parser(
         'create', 
