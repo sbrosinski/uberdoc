@@ -32,19 +32,26 @@ except ImportError:
         return out
 
     find_packages = _find_packages
+
+#with open('LICENSE') as fp:
+#    license = fp.read()
     
 setup(
     name = 'uberdoc',
-    version = '1.0.0',
+    version = '1.0.1',
     packages = find_packages('src'),
     description = 'Pandoc wrapper for large, multi-chapter documents.',
     author='Stephan Brosinski',
     author_email='sbrosinski@gmail.com',
     url = 'http://github.com/sbrosinski/uberdoc',
+    download_url = 'http://github.com/sbrosinski/uberdoc',
+    license = "license",
 	keywords = ["pandoc", "markdown"],
     classifiers = [
         "Programming Language :: Python",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 3 - Alpha",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
         "Environment :: Other Environment",
         "Intended Audience :: Developers"
         ],
