@@ -1,5 +1,1 @@
-build/
-dist/
-MANIFEST
-*.egg-info/
-
+out
