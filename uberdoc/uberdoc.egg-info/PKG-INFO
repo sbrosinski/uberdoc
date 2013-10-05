@@ -1,0 +1,18 @@
+Metadata-Version: 1.0
+Name: uberdoc
+Version: 1.1.0
+Summary: Pandoc wrapper for large, multi-chapter documents.
+Home-page: http://github.com/sbrosinski/uberdoc
+Author: Stephan Brosinski
+Author-email: sbrosinski@gmail.com
+License: license
+Download-URL: http://github.com/sbrosinski/uberdoc
+Description: UNKNOWN
+Keywords: pandoc,markdown
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Developers
