@@ -190,7 +190,7 @@ class Uberdoc:
         return [line for line in lines if not line.startswith("#")]
 
     def build(self, pdf = False):
-        """Calls all steps of the doc build process"""
+        """Calls all steps of the doc build process"""  
         print("Check environment ...")
         self.check_env(verbose = False)
 
@@ -364,7 +364,10 @@ def main():
     parser_show.set_defaults(func = uberdoc.show)
 
     args = parser.parse_args()
-    args.func() 
+    if args.func == uberdoc.build:
+        uberdoc.build(pdf = args.pdf) 
+    else:
+        args.func() 
 
 
 if __name__ == "__main__":
