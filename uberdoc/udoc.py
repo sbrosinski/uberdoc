@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+#
+# todo
+# - doesn't seem to take doc_dir's styles, but the default styles, do these
+#   need to be aboslute paths? central styles?
+# - verbose argument doesnt work yet
+# - missing unit tests
+
 
 """Wrapper script for pandoc. Useful for larger documents, since it breaks up
 several e.g. markdown files into chapters and provides a build process to
@@ -30,14 +37,20 @@ __version__ = "1"
 
 class Config:
     """Encapsulates config file access"""    
-    def __init__(self, file_name):
+    def __init__(self, file_name, defaults = {}):
         if not os.path.isfile(file_name):
             file_name = resource_filename(__name__, "uberdoc.cfg") 
             if not os.path.isfile(file_name):
                 raise Exception("Can't find config file: " + file_name + " " + os.path.dirname(os.path.abspath(__file__)) + " " + os.getcwd())
            
         print("Loading config: " + file_name)
+        self.file_name = file_name
         self.conf = ConfigParser()
+        
+        for key in defaults:
+            self.conf.set("DEFAULT", key, defaults[key])
+
+
         self.conf.readfp(open(file_name))
     
     #@staticmethod
@@ -53,7 +66,10 @@ class Config:
         """Shortcut for accessing config options which are handled as
         Config class properties
         """
-        return self.conf.get("DEFAULT", key) 
+        try:
+            return self.conf.get("DEFAULT", key) 
+        except Exception:
+            raise Exception("Config file " + self.file_name + " doesn't contain key " + key)    
 
     def __setitem__(self, key, value):
         self.conf.set("DEFAULT", key, value)
@@ -78,6 +94,7 @@ class Uberdoc:
         self.out_dir = self.prefix_path(self.conf["out_dir"])
         self.in_dir = self.prefix_path(self.conf["in_dir"])
         self.style_dir = self.prefix_path(self.conf["style_dir"])
+        self.template_dir = self.prefix_path("templates")
 
 
     def cmd(self, cmdStr, verbose = False, cwd = '.', echo = False, env = []):
@@ -125,7 +142,7 @@ class Uberdoc:
             files.append(os.path.join(line, line + self.conf["input_ext"]))  
         return files
 
-    def generate_doc(self, files, pdf = False, verbose = False):
+    def generate_doc(self, files, pdf = False, verbose = True):
         """Calls pandoc to generate html, and optionally PDF docs"""
         file_list =  " ".join(files)    
 
@@ -144,11 +161,18 @@ class Uberdoc:
 
         # build pdf in addition, if required (takes a lot longer)
         if pdf:
+            # check if doc dir has tex template, if not use default
+            tex_template = os.path.abspath(os.path.join(self.conf["doc_dir"], "templates", "default.tex"))
+            if os.path.isfile(tex_template):
+                template = ' --template=' + tex_template
+            else:
+                template = ' --template=' + resource_filename(__name__, "templates/default.tex")
+
             build_cmd = " ".join([
             self.conf["pandoc_cmd"], 
             self.conf["pandoc_options_pdf"], 
                 ' -V VERSION:"{0}" '.format(self.version()),
-                ' --template=' + resource_filename(__name__, "templates/default.tex"),
+                template,
                 file_list,  
                 "-o", 
                 out_file + ".pdf"])
@@ -171,7 +195,7 @@ class Uberdoc:
         if os.path.isdir(self.style_dir):
             shutil.copytree(
                 self.style_dir, 
-                os.path.join(self.out_dir, self.style_dir))
+                os.path.join(self.out_dir, self.conf["style_dir"]))
       
         for line in toc_lines:
             img_dir = self.conf["img_dir"]
@@ -182,6 +206,22 @@ class Uberdoc:
                     os.path.join(self.in_dir, line, img_dir), 
                     os.path.join(self.out_dir, line, img_dir))
 
+    def customize_templates(self):
+        if os.path.isdir(self.template_dir):
+            shutil.rmtree(self.template_dir)   
+
+        print("Creating templates ...")
+        shutil.copytree(
+            resource_filename(__name__, "templates"), 
+            self.template_dir)
+
+        if os.path.isdir(self.style_dir):
+            shutil.rmtree(self.style_dir)   
+
+        print("Creating styles ...")
+        shutil.copytree(
+            resource_filename(__name__, "style"), 
+            self.style_dir)
 
     def read_toc(self):
         """Reads the toc file containing the chapter list."""
@@ -212,7 +252,12 @@ class Uberdoc:
         #uberdoc_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
         #uberdoc_dir = self.conf["doc_dir"]
         uberdoc_dir = os.path.abspath(self.conf["doc_dir"])
-        env = [("GIT_WORK_TREE", uberdoc_dir), ("GIT_DIR", os.path.join(uberdoc_dir, ".git"))]
+        
+        git_dir = self._find_closest_git_dir(uberdoc_dir)
+        if git_dir is None:
+            return datetime.datetime.now().strftime("%Y-%m-%d")
+
+        env = [("GIT_WORK_TREE", uberdoc_dir), ("GIT_DIR", git_dir)]
         
         returncode, version_str, error = self.cmd('git log -1 --format="%cd (%h)" --date=short', 
             cwd = uberdoc_dir,
@@ -224,6 +269,16 @@ class Uberdoc:
         else:
             version_str = version_str.rstrip()
             return version_str
+
+    def _find_closest_git_dir(self, startdir):
+        currentdir = os.path.abspath(startdir)
+        while currentdir != "/":
+            if os.path.isdir(os.path.join(currentdir, ".git")):
+                return os.path.join(currentdir, ".git")
+            currentdir = os.path.abspath(os.path.join(currentdir, ".."))
+        return None    
+            
+
 
     def git(self):
         """Turns the current dir into a git repo and adds default .gitignore"""
@@ -256,17 +311,21 @@ class Uberdoc:
 
         print("Creating dir structure and sample chapters ...")
         
-        os.mkdir(in_dir)
-        os.makedirs(os.path.join(in_dir, "chapter1", "img"))
-        os.makedirs(os.path.join(in_dir, "chapter2", "img"))   
-        with open(os.path.join(in_dir, "toc.txt"), "w") as toc:
-            toc.writelines(["chapter1\n", "chapter2\n"])
-        with open(os.path.join(in_dir, "chapter1", "chapter1.md"), "w") as chapter1:
-            chapter1.write("# Chapter 1 \n")
-            chapter1.write("A sample chapter. \n")
-        with open(os.path.join(in_dir, "chapter2", "chapter2.md"), "w") as chapter2:
-            chapter2.write("# Chapter 2 \n")
-            chapter2.write("A second sample chapter. \n")
+        shutil.copytree(
+            resource_filename(__name__, "sample"), 
+            in_dir)
+
+        #os.mkdir(in_dir)
+        #os.makedirs(os.path.join(in_dir, "chapter1", "img"))
+        #os.makedirs(os.path.join(in_dir, "chapter2", "img"))   
+        #with open(os.path.join(in_dir, "toc.txt"), "w") as toc:
+        #    toc.writelines(["chapter1\n", "chapter2\n"])
+        #with open(os.path.join(in_dir, "chapter1", "chapter1.md"), "w") as chapter1:
+        #    chapter1.write("# Chapter 1 \n")
+        #    chapter1.write("A sample chapter. \n")
+        #with open(os.path.join(in_dir, "chapter2", "chapter2.md"), "w") as chapter2:
+        #    chapter2.write("# Chapter 2 \n")
+        #    chapter2.write("A second sample chapter. \n")
     
 
     def check_env(self, verbose = True):
@@ -314,7 +373,7 @@ class Uberdoc:
 
 
 def main():
-    conf = Config("uberdoc.cfg")
+    conf = Config("uberdoc.cfg", defaults = {"doc_dir" : "."})
     uberdoc = Uberdoc(conf);
 
     parser = argparse.ArgumentParser(
@@ -362,6 +421,11 @@ def main():
         "show",
         help = "shows current document in browser")
     parser_show.set_defaults(func = uberdoc.show)
+
+    parser_customize = subparsers.add_parser(
+        "customize",
+        help = "duplicates default templates and styles for customizing")
+    parser_customize.set_defaults(func = uberdoc.customize_templates)
 
     args = parser.parse_args()
     if args.func == uberdoc.build:

@@ -5,21 +5,22 @@ import os
 import shutil
 
 
-# problem: each method in uberdoc assumes everything happens in current
-# working dir? how do I run tests in a dir which is not current wd?
-# there should be a central way to tell uberdoc which dir is the doc
-# dir, shouldnt have to be only the working dir!
-
 class TestUberdoc:
     BUILD_DIR = "testbuild"
     TEST_CONF_FILE = "tests/uberdoc_tests.cfg"
 
     def setup(self):
         self.conf = Config(self.TEST_CONF_FILE)
-        self.conf['doc_dir'] = 'testbuild'
+        self.conf['doc_dir'] = os.path.abspath("testbuild")
         self.u = Uberdoc(self.conf)
         self.clean()
-        self.out_dir = os.path.join(self.BUILD_DIR, self.conf["out_dir"])
+        #self.out_dir = os.path.join(self.BUILD_DIR, self.conf["out_dir"])
+
+        self.out_dir = self.u.prefix_path(self.conf["out_dir"])
+        self.in_dir = self.u.prefix_path(self.conf["in_dir"])
+        self.style_dir = self.u.prefix_path(self.conf["style_dir"])
+        self.template_dir = self.u.prefix_path("templates")
+
 
     @with_setup(setup)    
     def test_env(self):
@@ -58,18 +59,12 @@ class TestUberdoc:
         self.u.git()
         assert_true(os.path.isfile(os.path.join(self.BUILD_DIR, ".gitignore")))
         version = self.u.version()
-        
         abs_doc_dir = os.path.abspath(self.conf["doc_dir"])
-        
         env = [("GIT_WORK_TREE", abs_doc_dir), ("GIT_DIR", os.path.join(abs_doc_dir, ".git"))]
         returncode, version_str, error = self.u.cmd('git log -1 --format="%h" --date=short', 
             cwd = abs_doc_dir,
             env = env) 
-        #version_str = version_str.decode('utf-8')
         version_str = version_str.rstrip()
-        #version = str(version.decode('utf-8'))
-        print(version)
-        print(version_str)
         assert_true(version.endswith("(" + version_str + ")"))
 
     @with_setup(setup)  
@@ -91,10 +86,23 @@ class TestUberdoc:
         conf = Config(self.TEST_CONF_FILE)
         assert_equals(conf["in_dir"], "in")
 
-        #u = Uberdoc2()
-        #u.generate_file_list()
+    @with_setup(setup)  
+    def test_customize(self):
+        self.u.init_doc()
+        self.u.customize_templates()
+        assert_true(os.path.isdir(self.style_dir))
+        assert_true(os.path.isdir(self.template_dir))
+        assert_true(os.path.isfile(os.path.join(self.template_dir, "default.tex")))
+        self.u.customize_templates()
 
-
+    @with_setup(setup)  
+    def test_copy_dependencies(self):
+        self.u.init_doc()
+        self.u.customize_templates()
+        self.u.clean()
+        self.u.copy_dependencies(toc_lines = self.u.read_toc())
+        print(os.path.join(self.out_dir, "style"))
+        assert_true(os.path.isdir(os.path.join(self.out_dir, "style")))
 
     def clean(self):
         if os.path.isdir(self.BUILD_DIR):

@@ -38,8 +38,8 @@ except ImportError:
     
 setup(
     name = 'uberdoc',
-    version = '1.1.0',
-    packages = find_packages('uberdoc'),
+    version = '1.1.1',
+    packages = find_packages('.', exclude=('tests',)),
     description = 'Pandoc wrapper for large, multi-chapter documents.',
     author='Stephan Brosinski',
     author_email='sbrosinski@gmail.com',
@@ -55,12 +55,12 @@ setup(
         "Environment :: Other Environment",
         "Intended Audience :: Developers"
         ],
-    package_dir={'':'uberdoc'},
-    package_data={'uberdoc': ['templates/*.*', 'style/*.*', 'uberdoc.cfg']},
+    #package_dir={'': 'uberdoc'},
+    package_data={'': ['templates/*.*', 'style/*.*', 'sample/*.*', 'uberdoc.cfg', 'default_gitignore']},
     include_package_data = True,
     entry_points = {
     	'console_scripts': [
-    		'uberdoc = udoc:main'
+    		'uberdoc = uberdoc.udoc:main'
     	]
     }
 )
