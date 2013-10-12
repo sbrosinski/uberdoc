@@ -13,6 +13,7 @@ generate html and pdf docs from them.
 """
 from __future__ import print_function
 import os
+from os import path
 import argparse
 import sys
 import subprocess
@@ -32,35 +33,23 @@ else:
     from termcolor import colored, cprint
 
 __author__ = "Stephan Brosinski"
-#__version__ = pkg_resources.require("uberdoc")[0].version
-__version__ = "1"
+__version__ = "1.1.2"
 
 class Config:
     """Encapsulates config file access"""    
     def __init__(self, file_name, defaults = {}):
-        if not os.path.isfile(file_name):
+        if not path.isfile(file_name):
             file_name = resource_filename(__name__, "uberdoc.cfg") 
-            if not os.path.isfile(file_name):
-                raise Exception("Can't find config file: " + file_name + " " + os.path.dirname(os.path.abspath(__file__)) + " " + os.getcwd())
+            if not path.isfile(file_name):
+                raise Exception("Can't find config file: " + file_name + " " + path.dirname(path.abspath(__file__)) + " " + os.getcwd())
            
-        print("Loading config: " + file_name)
         self.file_name = file_name
         self.conf = ConfigParser()
         
         for key in defaults:
             self.conf.set("DEFAULT", key, defaults[key])
 
-
         self.conf.readfp(open(file_name))
-    
-    #@staticmethod
-    #def create_from(config, defaultvals = {}):
-    #    newconfig = Config()
-    #    for key, value in defaultvals.items():
-    #        newconfig[key] = value
-    #    for key, value in config.items():
-    #        newconfig[key] = value 
-    #    return newconfig
 
     def __getitem__(self, key):    
         """Shortcut for accessing config options which are handled as
@@ -82,14 +71,9 @@ class Config:
         return self.conf.items("DEFAULT")
 
 
-
-
-#_conf = Config("uberdoc.cfg")
-
 class Uberdoc:
 
     def __init__(self, conf):
-        #self.conf = Config.create_from(conf)
         self.conf = conf
         self.out_dir = self.prefix_path(self.conf["out_dir"])
         self.in_dir = self.prefix_path(self.conf["in_dir"])
@@ -108,7 +92,6 @@ class Uberdoc:
             os.environ[key] = value            
 
         cmd_env = os.environ
-        #cmd_env = os.environ
 
         if verbose: 
             print('-------- executing cmd -------------')
@@ -139,15 +122,14 @@ class Uberdoc:
         """Uses the toc to generate chapter relative paths to the input files"""
         files = []
         for line in toc_lines:
-            files.append(os.path.join(line, line + self.conf["input_ext"]))  
+            files.append(path.join(line, line + self.conf["input_ext"]))  
         return files
 
     def generate_doc(self, files, pdf = False, verbose = True):
         """Calls pandoc to generate html, and optionally PDF docs"""
         file_list =  " ".join(files)    
 
-
-        out_file = os.path.join("..", self.conf["out_dir"], self.conf["doc_filename"])    
+        out_file = path.join(os.pardir, self.conf["out_dir"], self.conf["doc_filename"])    
         
         # always build html doc
         build_cmd = " ".join([
@@ -162,8 +144,8 @@ class Uberdoc:
         # build pdf in addition, if required (takes a lot longer)
         if pdf:
             # check if doc dir has tex template, if not use default
-            tex_template = os.path.abspath(os.path.join(self.conf["doc_dir"], "templates", "default.tex"))
-            if os.path.isfile(tex_template):
+            tex_template = path.abspath(path.join(self.conf["doc_dir"], "templates", "default.tex"))
+            if path.isfile(tex_template):
                 template = ' --template=' + tex_template
             else:
                 template = ' --template=' + resource_filename(__name__, "templates/default.tex")
@@ -181,7 +163,7 @@ class Uberdoc:
     def clean(self, recreate_out = False):
         """Recreates out_dir""" 
         print("removing " + self.out_dir)
-        if os.path.isdir(self.out_dir):
+        if path.isdir(self.out_dir):
             shutil.rmtree(self.out_dir)
             print("removed")
         if recreate_out:
@@ -192,22 +174,22 @@ class Uberdoc:
         Chapters with images will have their images copied there as
         well, while preserving the chapter dir structure
         """
-        if os.path.isdir(self.style_dir):
+        if path.isdir(self.style_dir):
             shutil.copytree(
                 self.style_dir, 
-                os.path.join(self.out_dir, self.conf["style_dir"]))
+                path.join(self.out_dir, self.conf["style_dir"]))
       
         for line in toc_lines:
             img_dir = self.conf["img_dir"]
-            if os.path.isdir(os.path.join(self.in_dir, line, img_dir)):
-                os.mkdir(os.path.join(self.out_dir, line))
+            if path.isdir(path.join(self.in_dir, line, img_dir)):
+                os.mkdir(path.join(self.out_dir, line))
           
                 shutil.copytree(
-                    os.path.join(self.in_dir, line, img_dir), 
-                    os.path.join(self.out_dir, line, img_dir))
+                    path.join(self.in_dir, line, img_dir), 
+                    path.join(self.out_dir, line, img_dir))
 
     def customize_templates(self):
-        if os.path.isdir(self.template_dir):
+        if path.isdir(self.template_dir):
             shutil.rmtree(self.template_dir)   
 
         print("Creating templates ...")
@@ -215,7 +197,7 @@ class Uberdoc:
             resource_filename(__name__, "templates"), 
             self.template_dir)
 
-        if os.path.isdir(self.style_dir):
+        if path.isdir(self.style_dir):
             shutil.rmtree(self.style_dir)   
 
         print("Creating styles ...")
@@ -225,7 +207,7 @@ class Uberdoc:
 
     def read_toc(self):
         """Reads the toc file containing the chapter list."""
-        with open(os.path.join(self.in_dir, self.conf["toc_filename"])) as f:
+        with open(path.join(self.in_dir, self.conf["toc_filename"])) as f:
             lines = f.read().splitlines()
         return [line for line in lines if not line.startswith("#")]
 
@@ -249,9 +231,7 @@ class Uberdoc:
         cprint("Done ...", "green")
 
     def version(self):
-        #uberdoc_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-        #uberdoc_dir = self.conf["doc_dir"]
-        uberdoc_dir = os.path.abspath(self.conf["doc_dir"])
+        uberdoc_dir = path.abspath(self.conf["doc_dir"])
         
         git_dir = self._find_closest_git_dir(uberdoc_dir)
         if git_dir is None:
@@ -271,35 +251,33 @@ class Uberdoc:
             return version_str
 
     def _find_closest_git_dir(self, startdir):
-        currentdir = os.path.abspath(startdir)
+        currentdir = path.abspath(startdir)
         while currentdir != "/":
-            if os.path.isdir(os.path.join(currentdir, ".git")):
-                return os.path.join(currentdir, ".git")
-            currentdir = os.path.abspath(os.path.join(currentdir, ".."))
+            if path.isdir(path.join(currentdir, ".git")):
+                return path.join(currentdir, ".git")
+            currentdir = path.abspath(path.join(currentdir, os.pardir))
         return None    
-            
-
 
     def git(self):
         """Turns the current dir into a git repo and adds default .gitignore"""
         print("Initializing git repo in current dir and adding files ...")
         uberdoc_dir = self.conf["doc_dir"]
-        env = [("GIT_WORK_TREE", uberdoc_dir), ("GIT_DIR", os.path.join(uberdoc_dir, ".git"))]
+        env = [("GIT_WORK_TREE", uberdoc_dir), ("GIT_DIR", path.join(uberdoc_dir, ".git"))]
 
         self.cmd('git init', echo = True, env = env)
-        shutil.copyfile(resource_filename(__name__, "default_gitignore"), os.path.join(uberdoc_dir, ".gitignore"))
+        shutil.copyfile(resource_filename(__name__, "default_gitignore"), path.join(uberdoc_dir, ".gitignore"))
         self.cmd('git add .gitignore', echo = True, env = env)
         self.cmd('git add in', echo = True, env = env)
         self.cmd('git add uberdoc.cfg', echo = True, env = env)
         self.cmd('git commit -m "setup uberdoc document"', echo = True, env = env)
 
     def show(self):
-        file_html = os.path.join(self.out_dir, self.conf["doc_filename"] + ".html")
-        file_pdf = os.path.join(self.out_dir, self.conf["doc_filename"] + ".pdf")
+        file_html = path.join(self.out_dir, self.conf["doc_filename"] + ".html")
+        file_pdf = path.join(self.out_dir, self.conf["doc_filename"] + ".pdf")
         # on windows this should be
         #os.startfile(file_html)
         self.cmd("open " + file_html)
-        if os.path.isfile(file_pdf):
+        if path.isfile(file_pdf):
             self.cmd("open " + file_pdf)
 
     def init_doc(self):
@@ -314,19 +292,7 @@ class Uberdoc:
         shutil.copytree(
             resource_filename(__name__, "sample"), 
             in_dir)
-
-        #os.mkdir(in_dir)
-        #os.makedirs(os.path.join(in_dir, "chapter1", "img"))
-        #os.makedirs(os.path.join(in_dir, "chapter2", "img"))   
-        #with open(os.path.join(in_dir, "toc.txt"), "w") as toc:
-        #    toc.writelines(["chapter1\n", "chapter2\n"])
-        #with open(os.path.join(in_dir, "chapter1", "chapter1.md"), "w") as chapter1:
-        #    chapter1.write("# Chapter 1 \n")
-        #    chapter1.write("A sample chapter. \n")
-        #with open(os.path.join(in_dir, "chapter2", "chapter2.md"), "w") as chapter2:
-        #    chapter2.write("# Chapter 2 \n")
-        #    chapter2.write("A second sample chapter. \n")
-    
+   
 
     def check_env(self, verbose = True):
         def exit_if(condition, msg):
@@ -335,7 +301,6 @@ class Uberdoc:
                 sys.exit(1)
 
         if verbose:
-            #print("Uberdoc version: " + __version__)
             cprint("Config settings: ", "yellow")
             if not self.isfile("uberdoc.cfg"):
                 print("No project specific config file. Using defaults.")
@@ -351,24 +316,24 @@ class Uberdoc:
             "Error: Couldn't find git in current path.") 
 
         exit_if(
-            not os.path.isdir(self.in_dir),
+            not path.isdir(self.in_dir),
             "Error: Couldn't find input folder. Was expecting folder: " + self.in_dir)
 
         toc_file_path = self.prefix_path(self.conf["in_dir"], self.conf["toc_filename"])
         exit_if(
-            not os.path.isfile(toc_file_path),
+            not path.isfile(toc_file_path),
             "Error: Couldn't find toc file. Was expecting: " + toc_file_path)
 
         if verbose: cprint("Environment setup ok.", "green")
 
     def prefix_path(self, *parts):
-        return os.path.join(self.conf["doc_dir"], *parts)
+        return path.join(self.conf["doc_dir"], *parts)
 
     def isdir(self, adir):
-        return os.path.isdir(self.prefix_path(adir))    
+        return path.isdir(self.prefix_path(adir))    
 
     def isfile(self, afile):
-        return os.path.isfile(self.prefix_path(afile))    
+        return path.isfile(self.prefix_path(afile))    
 
 
 

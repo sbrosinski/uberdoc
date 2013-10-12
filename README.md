@@ -86,14 +86,14 @@ If Pandoc or Uberdoc throw errors, run this command to check if your document se
 
 * Uberdoc creates a VERSION variable containing the documents current git hash which can be used in your HTML or Latex templates
 * You can place a # in front of a TOC entry to disable a chapter
-* 
+* By using --default-image-extension as a Pandoc config option Pandoc will for example use PNGs for HTML and PDFs for PDF documents without you having to change the image links in your markdown, see the sample doc
     
 ## Requirements
 
-* at least Python 2.6 on MacOs or Linux (Windows should work, but no guarantees)
+* Python 2.6, 2.8. or 3 on MacOS or Linux (Windows should work, but no guarantees)
 * a recent version of [Pandoc](http://johnmacfarlane.net/pandoc/) (newer than 1.9)
 * git
-* LaTex if you want to create PDF documents, please take a look at [pandoc's instructions](http://johnmacfarlane.net/pandoc/installing.html)
+* LaTex if you want to create PDF documents, please take a look at [Pandoc's instructions](http://johnmacfarlane.net/pandoc/installing.html)
 * Depending on the LaTex template use, you may have to use the LaTex distribution's package manager to install additional LaTex packages.
 
 ## Installation
@@ -141,5 +141,19 @@ You may change *uberdoc.cfg* as follows:
 
     # pandoc conversions options for pdf
     pandoc_options_pdf =  -s --template=../templates/default.tex --toc --number-sections -V geometry:"top=2cm, bottom=3cm, left=2.5cm, right=2cm"
+
+## Contributing
+
+Uberdoc uses [nose](http://nose.readthedocs.org/en/latest/) for testing and [tox](http://testrun.org/tox/latest/) to run tests for different Python versions.
+
+Just run either
+    $ nosetests
+    $ tox
+
+## Ideas for improvement
+
+* A markdown pre-processor which supports plugins so you can easly extends the existing markdown syntax or change document content when generating the document
+* Support for epub generation, so large documents can be better read on mobile devices
+* Diff-View, generate a version of the document showing the differences to a former version
 
 *Now start writing and stop messing with your tools!*
