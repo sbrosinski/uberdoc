@@ -130,12 +130,19 @@ class Uberdoc:
         file_list =  " ".join(files)    
 
         out_file = path.join(os.pardir, self.conf["out_dir"], self.conf["doc_filename"])    
-        
+  
+        html_template = path.abspath(path.join(self.conf["doc_dir"], "templates", "default.html"))
+        if path.isfile(html_template):
+            template = ' --template=' + html_template
+        else:
+            template = ' --template=' + resource_filename(__name__, "templates/default.html")  
+
         # always build html doc
         build_cmd = " ".join([
             self.conf["pandoc_cmd"], 
             self.conf["pandoc_options_html"], 
             ' -V VERSION:"{0}" '.format(self.version()),
+            template,
             file_list, 
             "-o", 
             out_file + ".html"])
@@ -178,6 +185,10 @@ class Uberdoc:
             shutil.copytree(
                 self.style_dir, 
                 path.join(self.out_dir, self.conf["style_dir"]))
+        else:
+            shutil.copytree(
+                resource_filename(__name__, "style"), 
+                path.join(self.out_dir, self.conf["style_dir"]))            
       
         for line in toc_lines:
             img_dir = self.conf["img_dir"]
