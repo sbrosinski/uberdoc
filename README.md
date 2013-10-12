@@ -81,6 +81,8 @@ not in the table of contents anymore:
     Remove chapter2? (y/N):
 
 You can place a # in front of a TOC entry to disable a chapter or a ! to force Uberdoc to only consider this chapter.
+This way you can for example only build a subset of your document, or, using the outline command easily remove certain
+chapters.
 
 If Pandoc or Uberdoc throw errors, run this command to check if your document setup is okay.
 
