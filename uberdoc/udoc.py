@@ -207,9 +207,46 @@ class Uberdoc:
 
     def read_toc(self):
         """Reads the toc file containing the chapter list."""
-        with open(path.join(self.in_dir, self.conf["toc_filename"])) as f:
-            lines = f.read().splitlines()
-        return [line for line in lines if not line.startswith("#")]
+        toc_file = path.join(self.in_dir, self.conf["toc_filename"])
+        try:
+            with open(toc_file) as f:
+                lines = f.read().splitlines()
+            forced_lines = [line for line in lines if line.startswith("!")]                
+            if len(forced_lines) > 0:
+                return [line[1:] for line in forced_lines]
+            else:
+                return [line for line in lines if not line.startswith("#")]
+        except Exception:
+            cprint("Can't read " + toc_file, "red")
+            sys.exit(1)
+
+    def outline(self, toc = None, delete = False):
+        if toc is None:
+            toc = self.read_toc()
+        for toc_entry in toc:
+            chapter_dir = path.join(self.in_dir, toc_entry)
+            chapter_file = path.join(chapter_dir, toc_entry + self.conf["input_ext"])
+            if not path.isdir(chapter_dir):
+                os.mkdir(chapter_dir)
+                cprint("Creating: " + toc_entry + " -> " + chapter_file, "yellow")
+                with open(chapter_file, "w") as chapter_md:
+                    chapter_md.write("# " + toc_entry + "\n")
+            else:
+                cprint("Exists: " + toc_entry + " -> " + chapter_file, "green")   
+        self._check_chapter_dirs(toc, delete)
+
+    def _check_chapter_dirs(self, toc, delete = False) : 
+        all_chapter_dirs = [name for name in os.listdir(self.in_dir)
+            if os.path.isdir(os.path.join(self.in_dir, name))]    
+        for chapter_dir_name in all_chapter_dirs:
+            if not chapter_dir_name in toc:
+                chapter_dir = path.join(self.in_dir, chapter_dir_name)
+                chapter_file = path.join(chapter_dir, chapter_dir_name + self.conf["input_ext"])
+                cprint("Missing: " + chapter_dir_name + " -> " + chapter_file, "red")    
+                if delete:
+                    should_remove = raw_input("Remove " + chapter_dir_name + "? (y/N): ")
+                    if should_remove == "y":
+                        shutil.rmtree(chapter_dir)
 
     def build(self, pdf = False):
         """Calls all steps of the doc build process"""  
@@ -392,9 +429,22 @@ def main():
         help = "duplicates default templates and styles for customizing")
     parser_customize.set_defaults(func = uberdoc.customize_templates)
 
+    parser_outline = subparsers.add_parser(
+        "outline",
+        help = "creates markdown files and directories from toc")
+    parser_outline.add_argument(
+        "-d", 
+        "--delete", 
+        help = "delete chapter dirs not in toc", 
+        action = "store_true")
+    parser_outline.set_defaults(func = uberdoc.outline)
+
+
     args = parser.parse_args()
     if args.func == uberdoc.build:
         uberdoc.build(pdf = args.pdf) 
+    elif args.func == uberdoc.outline:
+        uberdoc.outline(delete = args.delete)
     else:
         args.func() 
 

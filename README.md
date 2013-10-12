@@ -63,6 +63,25 @@ in ./templates or ./style.
     Creating templates ...
     Creating styles ...
 
+This scans the document's toc.txt table of contents file, shows which chapter directories exist in
+in the document dir, creates new chapter dirs and offers (with --delete) to remove chapters which are
+not in the table of contents anymore:
+
+    $ uberdoc outline
+    Exists: chapter1 -> ./in/chapter1/chapter1.md
+    Exists: chapter2 -> ./in/chapter2/chapter2.md
+    Exists: chapter3 -> ./in/chapter3/chapter3.md
+    Creating: chapter4 -> ./in/chapter4/chapter4.md
+
+    $ uberdoc outline --delete
+    Exists: chapter1 -> ./in/chapter1/chapter1.md
+    Exists: chapter3 -> ./in/chapter3/chapter3.md
+    Exists: chapter4 -> ./in/chapter4/chapter4.md
+    Missing: chapter2 -> ./in/chapter2/chapter2.md
+    Remove chapter2? (y/N):
+
+You can place a # in front of a TOC entry to disable a chapter or a ! to force Uberdoc to only consider this chapter.
+
 If Pandoc or Uberdoc throw errors, run this command to check if your document setup is okay.
 
     $ uberdoc check
@@ -85,7 +104,7 @@ If Pandoc or Uberdoc throw errors, run this command to check if your document se
 ## Tips
 
 * Uberdoc creates a VERSION variable containing the documents current git hash which can be used in your HTML or Latex templates
-* You can place a # in front of a TOC entry to disable a chapter
+* You can place a # in front of a TOC entry to disable a chapter or a ! to force Uberdoc to only consider this chapter
 * By using --default-image-extension as a Pandoc config option Pandoc will for example use PNGs for HTML and PDFs for PDF documents without you having to change the image links in your markdown, see the sample doc
     
 ## Requirements

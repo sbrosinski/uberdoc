@@ -2,6 +2,7 @@ from __future__ import print_function
 from nose.tools import *
 from uberdoc.udoc import Uberdoc, Config
 import os
+from os import path
 import shutil
 
 
@@ -11,10 +12,10 @@ class TestUberdoc:
 
     def setup(self):
         self.conf = Config(self.TEST_CONF_FILE)
-        self.conf['doc_dir'] = os.path.abspath("testbuild")
+        self.conf['doc_dir'] = path.abspath("testbuild")
         self.u = Uberdoc(self.conf)
         self.clean()
-        #self.out_dir = os.path.join(self.BUILD_DIR, self.conf["out_dir"])
+        #self.out_dir = path.join(self.BUILD_DIR, self.conf["out_dir"])
 
         self.out_dir = self.u.prefix_path(self.conf["out_dir"])
         self.in_dir = self.u.prefix_path(self.conf["in_dir"])
@@ -30,20 +31,20 @@ class TestUberdoc:
     @with_setup(setup)
     def test_init_doc(self):
         self.u.init_doc()
-        in_dir = os.path.join(self.BUILD_DIR, self.conf["in_dir"])
-        assert_true(os.path.isdir(in_dir))
-        assert_true(os.path.isdir(os.path.join(in_dir, "chapter1")))
-        assert_true(os.path.isdir(os.path.join(in_dir, "chapter2")))
-        assert_true(os.path.isfile(os.path.join(self.BUILD_DIR, "uberdoc.cfg")))
+        in_dir = path.join(self.BUILD_DIR, self.conf["in_dir"])
+        assert_true(path.isdir(in_dir))
+        assert_true(path.isdir(path.join(in_dir, "chapter1")))
+        assert_true(path.isdir(path.join(in_dir, "chapter2")))
+        assert_true(path.isfile(path.join(self.BUILD_DIR, "uberdoc.cfg")))
 
     @with_setup(setup)
     def test_clean(self):   
         os.mkdir(self.out_dir)
-        assert_true(os.path.isdir(self.out_dir))
+        assert_true(path.isdir(self.out_dir))
         self.u.clean(recreate_out = False)
-        assert_false(os.path.isdir(self.out_dir))
+        assert_false(path.isdir(self.out_dir))
         self.u.clean(recreate_out = True)
-        assert_true(os.path.isdir(self.out_dir))
+        assert_true(path.isdir(self.out_dir))
 
     @with_setup(setup)
     def test_read_toc(self):
@@ -57,10 +58,10 @@ class TestUberdoc:
     def test_version_with_git(self):
         self.u.init_doc()
         self.u.git()
-        assert_true(os.path.isfile(os.path.join(self.BUILD_DIR, ".gitignore")))
+        assert_true(path.isfile(path.join(self.BUILD_DIR, ".gitignore")))
         version = self.u.version()
-        abs_doc_dir = os.path.abspath(self.conf["doc_dir"])
-        env = [("GIT_WORK_TREE", abs_doc_dir), ("GIT_DIR", os.path.join(abs_doc_dir, ".git"))]
+        abs_doc_dir = path.abspath(self.conf["doc_dir"])
+        env = [("GIT_WORK_TREE", abs_doc_dir), ("GIT_DIR", path.join(abs_doc_dir, ".git"))]
         returncode, version_str, error = self.u.cmd('git log -1 --format="%h" --date=short', 
             cwd = abs_doc_dir,
             env = env) 
@@ -71,15 +72,15 @@ class TestUberdoc:
     def test_build_html(self):
         self.u.init_doc()
         self.u.build()
-        out_file = os.path.join(self.BUILD_DIR, self.conf["out_dir"], self.conf["doc_filename"])
-        assert_true(os.path.isfile(out_file + ".html"))
+        out_file = path.join(self.BUILD_DIR, self.conf["out_dir"], self.conf["doc_filename"])
+        assert_true(path.isfile(out_file + ".html"))
 
     @with_setup(setup)  
     def test_build_pdf(self):
         self.u.init_doc()
         self.u.build(pdf = True)
-        out_file = os.path.join(self.BUILD_DIR, self.conf["out_dir"], self.conf["doc_filename"])
-        assert_true(os.path.isfile(out_file + ".pdf"))
+        out_file = path.join(self.BUILD_DIR, self.conf["out_dir"], self.conf["doc_filename"])
+        assert_true(path.isfile(out_file + ".pdf"))
 
     @with_setup(setup)  
     def test_conf(self):
@@ -90,9 +91,9 @@ class TestUberdoc:
     def test_customize(self):
         self.u.init_doc()
         self.u.customize_templates()
-        assert_true(os.path.isdir(self.style_dir))
-        assert_true(os.path.isdir(self.template_dir))
-        assert_true(os.path.isfile(os.path.join(self.template_dir, "default.tex")))
+        assert_true(path.isdir(self.style_dir))
+        assert_true(path.isdir(self.template_dir))
+        assert_true(path.isfile(path.join(self.template_dir, "default.tex")))
         self.u.customize_templates()
 
     @with_setup(setup)  
@@ -101,10 +102,22 @@ class TestUberdoc:
         self.u.customize_templates()
         self.u.clean()
         self.u.copy_dependencies(toc_lines = self.u.read_toc())
-        print(os.path.join(self.out_dir, "style"))
-        assert_true(os.path.isdir(os.path.join(self.out_dir, "style")))
+        print(path.join(self.out_dir, "style"))
+        assert_true(path.isdir(path.join(self.out_dir, "style")))
+
+    @with_setup(setup)  
+    def test_outline(self):
+        self.u.init_doc()
+        toc = ["c1", "c2"]
+        self.u.outline(toc = toc)
+        assert_true(path.isdir(path.join(self.in_dir, "c1")))
+        assert_true(path.isfile(path.join(self.in_dir, "c1",  "c1.md")))
+        assert_true(path.isdir(path.join(self.in_dir, "c2")))
+        assert_true(path.isfile(path.join(self.in_dir, "c2",  "c2.md")))
+        assert_true(path.isdir(path.join(self.in_dir, "chapter1")))
+        assert_true(path.isdir(path.join(self.in_dir, "chapter2")))
 
     def clean(self):
-        if os.path.isdir(self.BUILD_DIR):
+        if path.isdir(self.BUILD_DIR):
             shutil.rmtree(self.BUILD_DIR)
         os.mkdir(self.BUILD_DIR)
