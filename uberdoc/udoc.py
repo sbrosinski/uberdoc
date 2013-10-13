@@ -1,11 +1,4 @@
 #!/usr/bin/env python
-#
-# todo
-# - doesn't seem to take doc_dir's styles, but the default styles, do these
-#   need to be aboslute paths? central styles?
-# - verbose argument doesnt work yet
-# - missing unit tests
-
 
 """Wrapper script for pandoc. Useful for larger documents, since it breaks up
 several e.g. markdown files into chapters and provides a build process to
@@ -125,7 +118,7 @@ class Uberdoc:
             files.append(path.join(line, line + self.conf["input_ext"]))  
         return files
 
-    def generate_doc(self, files, pdf = False, verbose = True):
+    def generate_doc(self, files, pdf = False, verbose = False):
         """Calls pandoc to generate html, and optionally PDF docs"""
         file_list =  " ".join(files)    
 
@@ -259,10 +252,10 @@ class Uberdoc:
                     if should_remove == "y":
                         shutil.rmtree(chapter_dir)
 
-    def build(self, pdf = False):
+    def build(self, pdf = False, verbose = False):
         """Calls all steps of the doc build process"""  
         print("Check environment ...")
-        self.check_env(verbose = False)
+        self.check_env(verbose = verbose)
 
         print("Cleaning ...")
         self.clean(recreate_out = True) 
@@ -274,7 +267,7 @@ class Uberdoc:
         self.copy_dependencies(toc)
 
         print("Generating document ...")
-        self.generate_doc(self.generate_file_list(toc), pdf = pdf)
+        self.generate_doc(self.generate_file_list(toc), pdf = pdf, verbose = verbose)
         
         cprint("Done ...", "green")
 
@@ -453,7 +446,7 @@ def main():
 
     args = parser.parse_args()
     if args.func == uberdoc.build:
-        uberdoc.build(pdf = args.pdf) 
+        uberdoc.build(pdf = args.pdf, verbose = args.verbose) 
     elif args.func == uberdoc.outline:
         uberdoc.outline(delete = args.delete)
     else:
