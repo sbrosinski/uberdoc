@@ -38,7 +38,7 @@ except ImportError:
     
 setup(
     name = 'uberdoc',
-    version = '1.1.2',
+    version = '1.1.3',
     packages = find_packages('.', exclude=('tests',)),
     description = 'Pandoc wrapper for large, multi-chapter documents.',
     author='Stephan Brosinski',

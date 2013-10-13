@@ -26,7 +26,7 @@ else:
     from termcolor import colored, cprint
 
 __author__ = "Stephan Brosinski"
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 class Config:
     """Encapsulates config file access"""    
