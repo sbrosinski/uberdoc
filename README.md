@@ -20,46 +20,46 @@ Uberdoc uses the following directory layout for your document.
 
     styles                  --> optional css styles etc.
     templates               --> optional html and latex templates (for PDF conversion)
-    
+
     out                     --> your doc ends up here
 
 ## Usage
 
 Initializing a new dir for uberdoc, this creates a sample document and config file
-    
-    $ uberdoc init
+
+    $ udoc init
     Copying default config file ...
     Creating dir structure and sample chapters ...
 
-Create a git repo for current document, provide an initial gitignore and commit 
-    
-    $ uberdoc git
+Create a git repo for current document, provide an initial gitignore and commit
+
+    $ udoc git
     Initializing git repo in current dir and adding files ...
     git init
     git add .gitignore
     git add in
     git add uberdoc.cfg
-    git commit -m "setup uberdoc document"    
+    git commit -m "setup uberdoc document"
 
 Create document, use -p for PDF output in addition to HTML
-    
-    $ uberdoc build
+
+    $ udoc build
     Check environment ...
     Cleaning ...
     Parse toc ...
     Copy dependencies ...
     Generating document ...
     Done ...
-    
+
 Open new document in browser or PDF viewer
-    
-    $ uberdoc show
+
+    $ udoc show
 
 If you want to customize the default HTML/Latex templates or CSS styles,
 run this command to create a copy of the default templates for your document. Then edit the files
 in ./templates or ./style.
 
-    $ uberdoc customize
+    $ udoc customize
     Creating templates ...
     Creating styles ...
 
@@ -67,13 +67,13 @@ This scans the document's toc.txt table of contents file, shows which chapter di
 in the document dir, creates new chapter dirs and offers (with --delete) to remove chapters which are
 not in the table of contents anymore:
 
-    $ uberdoc outline
+    $ udoc outline
     Exists: chapter1 -> ./in/chapter1/chapter1.md
     Exists: chapter2 -> ./in/chapter2/chapter2.md
     Exists: chapter3 -> ./in/chapter3/chapter3.md
     Creating: chapter4 -> ./in/chapter4/chapter4.md
 
-    $ uberdoc outline --delete
+    $ udoc outline --delete
     Exists: chapter1 -> ./in/chapter1/chapter1.md
     Exists: chapter3 -> ./in/chapter3/chapter3.md
     Exists: chapter4 -> ./in/chapter4/chapter4.md
@@ -86,7 +86,7 @@ chapters.
 
 If Pandoc or Uberdoc throw errors, run this command to check if your document setup is okay.
 
-    $ uberdoc check
+    $ udoc check
     Loading config: uberdoc.cfg
     Config settings:
       doc_dir = .
@@ -101,14 +101,14 @@ If Pandoc or Uberdoc throw errors, run this command to check if your document se
       pandoc_options_html = -s --default-image-extension=png --template=../templates/default.html
       pandoc_options_pdf = -s --default-image-extension=pdf --template=../templates/default.tex --toc --number-sections -V "geometry:top=2cm, bottom=3cm, left=2.5cm, right=2cm"
     Document version: 2013-10-10 (dc89484)
-    Environment setup ok.    
+    Environment setup ok.
 
 ## Tips
 
 * Uberdoc creates a VERSION variable containing the documents current git hash which can be used in your HTML or Latex templates
 * You can place a # in front of a TOC entry to disable a chapter or a ! to force Uberdoc to only consider this chapter
 * By using --default-image-extension as a Pandoc config option Pandoc will for example use PNGs for HTML and PDFs for PDF documents without you having to change the image links in your markdown, see the sample doc
-    
+
 ## Requirements
 
 * Python 2.6, 2.8. or 3 on MacOS or Linux (Windows should work, but no guarantees)
@@ -122,11 +122,11 @@ If Pandoc or Uberdoc throw errors, run this command to check if your document se
 The easiest way would be [pip](https://pypi.python.org/pypi/pip):
 
     pip install uberdoc
-    
+
 You can also clone this repository and run
 
     python setup.py install
-    
+
 ## Configuration
 
 You may change *uberdoc.cfg* as follows:
@@ -134,7 +134,7 @@ You may change *uberdoc.cfg* as follows:
     [DEFAULT]
 
     # dir for chapter content
-    in_dir = src 
+    in_dir = src
 
     # build output dir
     out_dir = out
@@ -168,7 +168,9 @@ You may change *uberdoc.cfg* as follows:
 Uberdoc uses [nose](http://nose.readthedocs.org/en/latest/) for testing and [tox](http://testrun.org/tox/latest/) to run tests for different Python versions.
 
 Just run either
+
     $ nosetests
+
     $ tox
 
 ## Ideas for improvement

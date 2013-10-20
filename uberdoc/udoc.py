@@ -16,18 +16,21 @@ import distutils.spawn
 import pkg_resources
 import datetime
 from pkg_resources import resource_filename
-
+from jinja2 import Template, Environment, FileSystemLoader
 
 if sys.version_info[0] > 2:
-    from configparser import ConfigParser
+    from configparser import SafeConfigParser
     from .termcolor import colored, cprint
 else:
-    from ConfigParser import ConfigParser
+    from ConfigParser import SafeConfigParser
     from termcolor import colored, cprint
 
 __author__ = "Stephan Brosinski"
-__version__ = "1.1.3"
+__version__ = "1.2"
 
+# todo
+# when reading vars from config file, reading from the user section should return only
+# user sections vars, not default section vars
 
 class Config:
 
@@ -41,7 +44,7 @@ class Config:
                                 " " + path.dirname(path.abspath(__file__)) + " " + os.getcwd())
 
         self.file_name = file_name
-        self.conf = ConfigParser()
+        self.conf = SafeConfigParser()
 
         for key in defaults:
             self.conf.set("DEFAULT", key, defaults[key])
@@ -56,7 +59,7 @@ class Config:
             return self.conf.get("DEFAULT", key)
         except Exception:
             raise Exception(
-                "Config file " + self.file_name + " doesn't contain key " + key)
+                "Config file " + self.file_name + " doesn't contain key " + str(key))
 
     def __setitem__(self, key, value):
         self.conf.set("DEFAULT", key, value)
@@ -68,6 +71,12 @@ class Config:
     def items(self):
         return self.conf.items("DEFAULT")
 
+    def user_items(self):
+        print(self.conf.sections())
+        items = {}
+        for name, value in self.conf.items("USER"):
+            items[name] = value
+        return items
 
 class Uberdoc:
 
@@ -123,12 +132,38 @@ class Uberdoc:
             files.append(path.join(line, line + self.conf["input_ext"]))
         return files
 
+    def preprocess(self, files):
+        template_dir = os.path.join(self.out_dir, self.conf["in_dir"])
+        env = Environment(loader=FileSystemLoader(template_dir))
+        doc_version = self.version()
+        user_conf_items = self.conf.user_items()
+
+        for input_file in files:
+            print("Preprocessing " + input_file)
+
+            template_vars = {
+                "udoc": {
+                    "version": __version__,
+                    "doc_version": doc_version,
+                    "md_file": input_file
+                },
+                "conf": user_conf_items
+            }
+
+            template = env.get_template(input_file)
+            content = template.render(template_vars)
+            complete_input_file = os.path.join(self.out_dir, self.conf["in_dir"], input_file)
+
+            with open(complete_input_file, 'w') as fout:
+                fout.write(content)
+
+
+
     def generate_doc(self, files, pdf=False, verbose=False):
         """Calls pandoc to generate html, and optionally PDF docs"""
         file_list = " ".join(files)
 
-        out_file = path.join(
-            os.pardir, self.conf["out_dir"], self.conf["doc_filename"])
+        out_file = path.join(path.abspath(self.out_dir), self.conf["doc_filename"])
 
         html_template = path.abspath(
             path.join(self.conf["doc_dir"], "templates", "default.html"))
@@ -137,6 +172,8 @@ class Uberdoc:
         else:
             template = ' --template=' + \
                 resource_filename(__name__, "templates/default.html")
+
+        pandoc_wd = path.join(self.out_dir, self.conf["in_dir"])
 
         # always build html doc
         build_cmd = " ".join([
@@ -147,7 +184,7 @@ class Uberdoc:
             file_list,
             "-o",
             out_file + ".html"])
-        self.cmd(build_cmd, cwd=self.in_dir, verbose=verbose)
+        self.cmd(build_cmd, cwd=pandoc_wd, verbose=verbose)
 
         # build pdf in addition, if required (takes a lot longer)
         if pdf:
@@ -168,7 +205,7 @@ class Uberdoc:
                                  file_list,
                                  "-o",
                                  out_file + ".pdf"])
-            self.cmd(build_cmd, cwd=self.in_dir, verbose=verbose)
+            self.cmd(build_cmd, cwd=pandoc_wd, verbose=verbose)
 
     def clean(self, recreate_out=False):
         """Recreates out_dir"""
@@ -201,6 +238,9 @@ class Uberdoc:
                 shutil.copytree(
                     path.join(self.in_dir, line, img_dir),
                     path.join(self.out_dir, line, img_dir))
+
+        shutil.copytree(self.in_dir, os.path.join(self.out_dir, self.conf["in_dir"]))
+
 
     def customize_templates(self):
         if path.isdir(self.template_dir):
@@ -281,9 +321,12 @@ class Uberdoc:
         print("Copy dependencies ...")
         self.copy_dependencies(toc)
 
+        print("Preprocessing input files ...")
+        files = self.generate_file_list(toc)
+        self.preprocess(files)
+
         print("Generating document ...")
-        self.generate_doc(
-            self.generate_file_list(toc), pdf=pdf, verbose=verbose)
+        self.generate_doc(files, pdf=pdf, verbose=verbose)
 
         cprint("Done ...", "green")
 

@@ -35,10 +35,10 @@ except ImportError:
 
 #with open('LICENSE') as fp:
 #    license = fp.read()
-    
+
 setup(
     name = 'uberdoc',
-    version = '1.1.3',
+    version = '1.2',
     packages = find_packages('.', exclude=('tests',)),
     description = 'Pandoc wrapper for large, multi-chapter documents.',
     author='Stephan Brosinski',
@@ -60,7 +60,8 @@ setup(
     include_package_data = True,
     entry_points = {
     	'console_scripts': [
-    		'uberdoc = uberdoc.udoc:main'
+    		'udoc = uberdoc.udoc:main'
     	]
-    }
+    },
+    install_requires=['Jinja2']
 )
