@@ -44,11 +44,11 @@ textarea {overflow:auto;vertical-align:top}
 table {border-collapse:separate;border-spacing:0}
 
 html {
-	background:#f2f2f2; 
-	font-size:14px; 
+	background:#f2f2f2;
+	font-size:14px;
 	padding:0 20px
 }
-body {background:#fff; margin:30px auto; padding:10px 30px 20px 80px; max-width:800px; 
+body {background:#fff; margin:30px auto; padding:10px 30px 20px 80px; max-width:800px;
 	box-shadow:0 5px 40px rgba(0,0,0,.2)
 	text-rendering: optimizeLegibility;
 	font-family: "Verdana";
@@ -68,8 +68,8 @@ h3:before {content:counter(counter-h1) "." counter(counter-h2) "." counter(count
 h4:before {content:counter(counter-h1) "." counter(counter-h2) "." counter(counter-h3) "." counter(counter-h4) " "}
 
 table {
-	border-top: 1px solid black; 
-	border-bottom: 1px solid black; 
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
 	caption-side:bottom; counter-increment: counter-table;}
 table caption {font-size: 12px; text-align: left; padding: 10px 0px 10px 0px;}
 table caption:before {content: "Table " counter(counter-table) ": ";}
@@ -78,6 +78,16 @@ table caption:before {content: "Table " counter(counter-table) ": ";}
 .figure p.caption {font-size: 12px;}
 .figure p.caption:before {content: "Figure " counter(counter-figure) ": ";}
 
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #ddd;
+	font-size: 13px;
+	line-height: 19px;
+	overflow: auto;
+	padding: 6px 10px;
+	border-radius: 3px;
+}
 
 /* header stylin */
 header h1 {margin: 0px; padding: 10px;}
