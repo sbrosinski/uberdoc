@@ -1,5 +1,28 @@
+# Extending the Markdown Syntax
 
-# Templating Demo
+Uberdoc uses a templating engine to allow user to extend the markdown syntax used in its chapter files.
+
+## Predefined Variables
+
+The following variables are provided by Uberdoc and can be used in markdown files by e.g. adding
+
+{% raw %}
+    {{udoc.doc_version}}
+{% endraw %}
+
+Variable | Value
+---------|---------
+{% for key in udoc %}{{ key }}|{{ udoc[key] }}
+{% endfor %}
+
+## Custom Variables
+
+Variable | Value
+---------|---------
+{% for key in conf %}{{ key }}|{{ conf[key] }}
+{% endfor %}
+
+## Macros
 
 Defining a macro in your markdown document:
 
@@ -23,6 +46,8 @@ results in:
 
 {{todo('this needs to be rewritten!')}}
 
+## Filters
+
 Or using filters:
 
 {% raw %}
@@ -33,6 +58,8 @@ Or using filters:
 {% filter upper %}
 This text becomes uppercase
 {% endfilter %}
+
+## Includes
 
 Or including other markdown files:
 

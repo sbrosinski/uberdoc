@@ -31,6 +31,8 @@ __version__ = "1.2"
 # todo
 # when reading vars from config file, reading from the user section should return only
 # user sections vars, not default section vars
+# - "View Source" Feature in HTML, see the Markup?
+# - "Jump direkectly to markdown File from HTML" - Feature?
 
 class Config:
 
@@ -45,31 +47,33 @@ class Config:
 
         self.file_name = file_name
         self.conf = SafeConfigParser()
+        self.conf.readfp(open(file_name))
+
+        print(len(self.conf.defaults()))
+        print(str(self.conf.sections()) + " " + path.abspath(file_name))
 
         for key in defaults:
-            self.conf.set("DEFAULT", key, defaults[key])
-
-        self.conf.readfp(open(file_name))
+            self.conf.set("MAIN", key, defaults[key])
 
     def __getitem__(self, key):
         """Shortcut for accessing config options which are handled as
         Config class properties
         """
         try:
-            return self.conf.get("DEFAULT", key)
+            return self.conf.get("MAIN", key)
         except Exception:
             raise Exception(
                 "Config file " + self.file_name + " doesn't contain key " + str(key))
 
     def __setitem__(self, key, value):
-        self.conf.set("DEFAULT", key, value)
+        self.conf.set("MAIN", key, value)
 
     def show(self):
-        for key, value in self.conf.items("DEFAULT"):
+        for key, value in self.conf.items("MAIN"):
             print("  " + key + " = " + value)
 
     def items(self):
-        return self.conf.items("DEFAULT")
+        return self.conf.items("MAIN")
 
     def user_items(self):
         print(self.conf.sections())
