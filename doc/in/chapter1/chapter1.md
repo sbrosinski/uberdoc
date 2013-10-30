@@ -1,3 +1,7 @@
+% Uberdoc
+% Stephan Brosinski
+%
+
 # Uberdoc
 
 Uberdoc is a wrapper script for [Pandoc](http://johnmacfarlane.net/pandoc/) which provides a build system to turn a number of e.g. markdown files into large documents.
@@ -173,7 +177,7 @@ Just run either
 
     $ tox
 
-## Ideas for improvement
+### Ideas for improvement
 
 * A markdown pre-processor which supports plugins so you can easly extends the existing markdown syntax or change document content when generating the document
 * Support for epub generation, so large documents can be better read on mobile devices

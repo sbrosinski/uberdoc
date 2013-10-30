@@ -23,7 +23,7 @@ class TestUberdoc:
         self.template_dir = self.u.prefix_path("templates")
 
 
-    @with_setup(setup)    
+    @with_setup(setup)
     def test_env(self):
         self.u.init_doc()
         self.u.check_env()
@@ -38,7 +38,7 @@ class TestUberdoc:
         assert_true(path.isfile(path.join(self.BUILD_DIR, "uberdoc.cfg")))
 
     @with_setup(setup)
-    def test_clean(self):   
+    def test_clean(self):
         os.mkdir(self.out_dir)
         assert_true(path.isdir(self.out_dir))
         self.u.clean(recreate_out = False)
@@ -50,11 +50,11 @@ class TestUberdoc:
     def test_read_toc(self):
         self.u.init_doc()
         lines = self.u.read_toc()
-        assert_true(len(lines) == 2)
+        assert_true(len(lines) == 3)
         assert_equals(lines[0], "chapter1")
         assert_equals(lines[1], "chapter2")
 
-    @with_setup(setup)  
+    @with_setup(setup)
     def test_version_with_git(self):
         self.u.init_doc()
         self.u.git()
@@ -62,32 +62,32 @@ class TestUberdoc:
         version = self.u.version()
         abs_doc_dir = path.abspath(self.conf["doc_dir"])
         env = [("GIT_WORK_TREE", abs_doc_dir), ("GIT_DIR", path.join(abs_doc_dir, ".git"))]
-        returncode, version_str, error = self.u.cmd('git log -1 --format="%h" --date=short', 
+        returncode, version_str, error = self.u.cmd('git log -1 --format="%h" --date=short',
             cwd = abs_doc_dir,
-            env = env) 
+            env = env)
         version_str = version_str.rstrip()
         assert_true(version.endswith("(" + version_str + ")"))
 
-    @with_setup(setup)  
+    @with_setup(setup)
     def test_build_html(self):
         self.u.init_doc()
         self.u.build()
         out_file = path.join(self.BUILD_DIR, self.conf["out_dir"], self.conf["doc_filename"])
         assert_true(path.isfile(out_file + ".html"))
 
-    @with_setup(setup)  
+    @with_setup(setup)
     def test_build_pdf(self):
         self.u.init_doc()
         self.u.build(pdf = True)
         out_file = path.join(self.BUILD_DIR, self.conf["out_dir"], self.conf["doc_filename"])
         assert_true(path.isfile(out_file + ".pdf"))
 
-    @with_setup(setup)  
+    @with_setup(setup)
     def test_conf(self):
         conf = Config(self.TEST_CONF_FILE)
         assert_equals(conf["in_dir"], "in")
 
-    @with_setup(setup)  
+    @with_setup(setup)
     def test_customize(self):
         self.u.init_doc()
         self.u.customize_templates()
@@ -96,7 +96,7 @@ class TestUberdoc:
         assert_true(path.isfile(path.join(self.template_dir, "default.tex")))
         self.u.customize_templates()
 
-    @with_setup(setup)  
+    @with_setup(setup)
     def test_copy_dependencies(self):
         self.u.init_doc()
         self.u.customize_templates()
@@ -105,7 +105,7 @@ class TestUberdoc:
         print(path.join(self.out_dir, "style"))
         assert_true(path.isdir(path.join(self.out_dir, "style")))
 
-    @with_setup(setup)  
+    @with_setup(setup)
     def test_outline(self):
         self.u.init_doc()
         toc = ["c1", "c2"]

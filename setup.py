@@ -38,7 +38,7 @@ except ImportError:
 
 setup(
     name = 'uberdoc',
-    version = '1.2',
+    version = '1.2.1',
     packages = find_packages('.', exclude=('tests',)),
     description = 'Pandoc wrapper for large, multi-chapter documents.',
     author='Stephan Brosinski',
@@ -63,5 +63,5 @@ setup(
     		'udoc = uberdoc.udoc:main'
     	]
     },
-    install_requires=['Jinja2']
+    install_requires=['jinja2']
 )

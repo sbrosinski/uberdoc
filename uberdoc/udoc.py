@@ -17,12 +17,11 @@ import pkg_resources
 import datetime
 from pkg_resources import resource_filename
 from jinja2 import Template, Environment, FileSystemLoader
+from .config import Config
 
 if sys.version_info[0] > 2:
-    from configparser import SafeConfigParser
     from .termcolor import colored, cprint
 else:
-    from ConfigParser import SafeConfigParser
     from termcolor import colored, cprint
 
 __author__ = "Stephan Brosinski"
@@ -33,54 +32,6 @@ __version__ = "1.2"
 # user sections vars, not default section vars
 # - "View Source" Feature in HTML, see the Markup?
 # - "Jump direkectly to markdown File from HTML" - Feature?
-
-class Config:
-
-    """Encapsulates config file access"""
-
-    def __init__(self, file_name, defaults={}):
-        if not path.isfile(file_name):
-            file_name = resource_filename(__name__, "uberdoc.cfg")
-            if not path.isfile(file_name):
-                raise Exception("Can't find config file: " + file_name +
-                                " " + path.dirname(path.abspath(__file__)) + " " + os.getcwd())
-
-        self.file_name = file_name
-        self.conf = SafeConfigParser()
-        self.conf.readfp(open(file_name))
-
-        print(len(self.conf.defaults()))
-        print(str(self.conf.sections()) + " " + path.abspath(file_name))
-
-        for key in defaults:
-            self.conf.set("MAIN", key, defaults[key])
-
-    def __getitem__(self, key):
-        """Shortcut for accessing config options which are handled as
-        Config class properties
-        """
-        try:
-            return self.conf.get("MAIN", key)
-        except Exception:
-            raise Exception(
-                "Config file " + self.file_name + " doesn't contain key " + str(key))
-
-    def __setitem__(self, key, value):
-        self.conf.set("MAIN", key, value)
-
-    def show(self):
-        for key, value in self.conf.items("MAIN"):
-            print("  " + key + " = " + value)
-
-    def items(self):
-        return self.conf.items("MAIN")
-
-    def user_items(self):
-        print(self.conf.sections())
-        items = {}
-        for name, value in self.conf.items("USER"):
-            items[name] = value
-        return items
 
 class Uberdoc:
 
@@ -392,7 +343,7 @@ class Uberdoc:
         """Generates an example in_dir dir structure, for new doc projects."""
         in_dir = self.in_dir
 
-        print("Copying default config file ...")
+        print("Copying default config file " + resource_filename(__name__, "uberdoc.cfg"))
         shutil.copyfile(
             resource_filename(__name__, "uberdoc.cfg"), self.prefix_path("uberdoc.cfg"))
 
