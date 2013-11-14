@@ -110,7 +110,8 @@ class Uberdoc:
             complete_input_file = os.path.join(self.out_dir, self.conf["in_dir"], input_file)
 
             with open(complete_input_file, 'w') as fout:
-                fout.write(content)
+                content_enc = content.encode('utf-8')
+                fout.write(content_enc)
 
 
 

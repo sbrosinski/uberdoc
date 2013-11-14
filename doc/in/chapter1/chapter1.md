@@ -31,13 +31,13 @@ Uberdoc uses the following directory layout for your document.
 
 Initializing a new dir for uberdoc, this creates a sample document and config file
 
-    $ uberdoc init
+    $ udoc init
     Copying default config file ...
     Creating dir structure and sample chapters ...
 
 Create a git repo for current document, provide an initial gitignore and commit
 
-    $ uberdoc git
+    $ udoc git
     Initializing git repo in current dir and adding files ...
     git init
     git add .gitignore
@@ -47,7 +47,7 @@ Create a git repo for current document, provide an initial gitignore and commit
 
 Create document, use -p for PDF output in addition to HTML
 
-    $ uberdoc build
+    $ udoc build
     Check environment ...
     Cleaning ...
     Parse toc ...
@@ -57,13 +57,13 @@ Create document, use -p for PDF output in addition to HTML
 
 Open new document in browser or PDF viewer
 
-    $ uberdoc show
+    $ udoc show
 
 If you want to customize the default HTML/Latex templates or CSS styles,
 run this command to create a copy of the default templates for your document. Then edit the files
 in ./templates or ./style.
 
-    $ uberdoc customize
+    $ udoc customize
     Creating templates ...
     Creating styles ...
 
@@ -71,13 +71,13 @@ This scans the document's toc.txt table of contents file, shows which chapter di
 in the document dir, creates new chapter dirs and offers (with --delete) to remove chapters which are
 not in the table of contents anymore:
 
-    $ uberdoc outline
+    $ udoc outline
     Exists: chapter1 -> ./in/chapter1/chapter1.md
     Exists: chapter2 -> ./in/chapter2/chapter2.md
     Exists: chapter3 -> ./in/chapter3/chapter3.md
     Creating: chapter4 -> ./in/chapter4/chapter4.md
 
-    $ uberdoc outline --delete
+    $ udoc outline --delete
     Exists: chapter1 -> ./in/chapter1/chapter1.md
     Exists: chapter3 -> ./in/chapter3/chapter3.md
     Exists: chapter4 -> ./in/chapter4/chapter4.md
@@ -90,7 +90,7 @@ chapters.
 
 If Pandoc or Uberdoc throw errors, run this command to check if your document setup is okay.
 
-    $ uberdoc check
+    $ udoc check
     Loading config: uberdoc.cfg
     Config settings:
       doc_dir = .

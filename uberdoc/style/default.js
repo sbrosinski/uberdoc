@@ -20,13 +20,13 @@ $(document).ready(function() {
 
         $(this).nextUntil('h1', 'h2').each(function() {
             countH2 += 1;
-            h2node = nodeData($(this), countH1 + "." + countH2, 2);
+            h2node = nodeData($(this), '<span class="hnum">' + countH1 + "." + countH2 + "</span>", 2);
 
             var h3data = [];
 
             $(this).nextUntil('h1,h2', 'h3').each(function() {
                 countH3 += 1;
-                h3data.push(nodeData($(this), countH1 + "." + countH2 + "." + countH3, 3));
+                h3data.push(nodeData($(this), '<span class="hnum">' + countH1 + "." + countH2 + "." + countH3 + "</span>", 3));
             });
 
             countH3 = 0;
@@ -37,7 +37,7 @@ $(document).ready(function() {
         });
         countH2 = 0;
 
-        h1data = nodeData($(this), countH1, 1);
+        h1data = nodeData($(this), '<span class="hnum">' + countH1 + "</span>", 1);
         h1data.children = h2data;
 
 
@@ -47,12 +47,13 @@ $(document).ready(function() {
 
     var $tree = $("DIV.navtree");
     $tree.tree({
-        data: data
+        data: data,
+        autoEscape: false,
+        autoOpen: 2
     });
     $('DIV.navtree').bind("tree.click", function(event) {
         var node = event.node;
-        var top = document.getElementById(node.id).offsetTop;
-        window.scrollTo(0, top);
+        window.location.hash = node.id;
         $tree.tree('openNode', node);
         event.preventDefault();
     });
