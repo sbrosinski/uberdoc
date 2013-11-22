@@ -1,0 +1,144 @@
+/*! normalize.css 2011-08-12T17:28 UTC · http://github.com/necolas/normalize.css */
+article,aside,details,figcaption,figure,footer,header,hgroup,nav,section {display:block}
+audio,canvas,video {display:inline-block;*display:inline;*zoom:1}
+audio:not([controls]) {display:none}
+[hidden] {display:none}
+html {font-size:100%;overflow-y:scroll;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+body {margin:0}
+body,button,input,select,textarea {font-family:sans-serif}
+a {color:#00e}
+a:visited {color:#551a8b}
+a:focus {outline:thin dotted}
+a:hover,a:active {outline:0}
+abbr[title] {border-bottom:1px dotted}
+b,strong {font-weight:bold}
+blockquote {margin:1em 40px}
+dfn {font-style:italic}
+mark {background:#ff0;color:#000}
+pre,code,kbd,samp {font-family:monospace,serif;_font-family:'courier new',monospace;font-size:1em}
+pre {white-space:pre;white-space:pre-wrap;word-wrap:break-word}
+q {quotes:none}
+q:before,q:after {content:'';content:none}
+small {font-size:75%}
+sub,sup {font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup {top:-0.5em}
+sub {bottom:-0.25em}
+ul,ol {margin:1em 0;padding:0 0 0 40px}
+dd {margin:0 0 0 40px}
+nav ul,nav ol {list-style:none;list-style-image:none}
+img {border:0;-ms-interpolation-mode:bicubic}
+svg:not(:root) {overflow:hidden}
+figure {margin:0}
+form {margin:0}
+fieldset {margin:0 2px;padding:.35em .625em .75em}
+legend {border:0;*margin-left:-7px}
+button,input,select,textarea {font-size:100%;margin:0;vertical-align:baseline;*vertical-align:middle}
+button,input {line-height:normal;*overflow:visible}
+table button,table input {*overflow:auto}
+button,html input[type="button"],input[type="reset"],input[type="submit"] {cursor:pointer;-webkit-appearance:button}
+input[type="checkbox"],input[type="radio"] {box-sizing:border-box;padding:0}
+input[type="search"] {-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-decoration {-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner {border:0;padding:0}
+textarea {overflow:auto;vertical-align:top}
+table {border-collapse:separate;border-spacing:0}
+
+html {
+	background:#f2f2f2;
+	font-size:14px;
+	padding:0 20px
+}
+body {background:#fff; margin:30px auto; padding:10px 30px 20px 80px; max-width:800px;
+	box-shadow:0 5px 40px rgba(0,0,0,.2)
+	text-rendering: optimizeLegibility;
+	font-family: "Verdana";
+	line-height: 20px;
+}
+
+h1, h2, h3, h4 {clear:both; padding:0}
+h1, h2, h3 {border-bottom:1px solid #e5e5e5}
+h1 {margin:1.8em 0 0 -50px; padding:.67em 0 0; font-size:22px; font-weight:bold; counter-increment:counter-h1; counter-reset:counter-h2}
+h2 {margin:1.65em 0 0 -50px; padding:.83em 0 0; font-size:19px; font-weight:bold; counter-increment:counter-h2; counter-reset:counter-h3}
+h3 {margin:1.5em 0 0; padding:1em 0 0; font-size:16px; font-weight:bold; counter-increment:counter-h3; counter-reset:counter-h4}
+h4 {margin:1.35em 0 0; padding:1.33em 0 0; font-size:14px; font-weight:bold; counter-increment:counter-h4}
+h1:before, h2:before {display:inline-block; min-width:50px}
+h1:before {content:counter(counter-h1) " "}
+h2:before {content:counter(counter-h1) "." counter(counter-h2) " "}
+h3:before {content:counter(counter-h1) "." counter(counter-h2) "." counter(counter-h3) " "}
+h4:before {content:counter(counter-h1) "." counter(counter-h2) "." counter(counter-h3) "." counter(counter-h4) " "}
+
+table {
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	caption-side:bottom; counter-increment: counter-table; margin-bottom: 20px; margin-top: 20px;}
+table caption {font-size: 12px; text-align: left; padding: 10px 0px 10px 0px;}
+table caption:before {content: "Table " counter(counter-table) ": ";}
+td, th {padding: 0px 10px 10px 0px; vertical-align: top;}
+
+
+.figure {text-align: center; counter-increment: counter-figure;}
+.figure p.caption {font-size: 12px;}
+.figure p.caption:before {content: "Figure " counter(counter-figure) ": ";}
+
+
+
+ul.jqtree-tree .jqtree-title {color: white; font-size: 12px;}
+
+/* navigation */
+.nav h1:before {content:none}
+
+@media screen {
+	.nav {position:fixed; z-index:99; top:0; left:0; bottom:0; width:0; background:#535353; border-right:1px solid #d3e0e6; padding:10px 10px 20px 30px; overflow:hidden;box-shadow:0 0 5px rgba(0,0,0,.1);
+		-moz-transition:width .3s, background .3s; -o-transition:width .3s, background .3s; -webkit-transition:width .3s, background .3s; transition:width .3s, background .3s}
+	.nav:hover {width:300px; overflow:auto; background:#535353}
+	.nav h1 {position:fixed; top:70px; left:58px; width:0; height:0; text-align:right; font-size:14px; line-height:1; font-weight:bold; text-transform:uppercase; color:#b9c0c3; -moz-transform:rotate(270deg); -ms-transform:rotate(270deg); -o-transform:rotate(270deg); -webkit-transform:rotate(270deg); transform:rotate(270deg)
+		-moz-transition:opacity .3s; -o-transition:opacity .3s; -webkit-transition:opacity .3s; transition:opacity .3s}
+	.nav:hover h1 {opacity:.33}
+
+	.navtree {margin: 10px 10px 10px 25px;}
+	.navtree ul, ol {margin: 0px;}
+	.nav .navtree {visibility:hidden;}
+	.nav:hover .navtree {visibility:visible;}
+	.nav .navtools {visibility:hidden;}
+	.nav:hover .navtools {visibility:visible;}
+	.navtools {font-size: 16px; margin-left: 20px; color: white;}
+	.nav a:hover {text-decoration: none;}
+	.nav a {color: white; text-decoration: none;}
+	.hnum {color: #aaaaaa;}
+}
+
+@media screen and (min-width:1200px) {
+	html {padding-left:300px;}
+	.nav {width:300px; overflow:auto; background:#535353}
+	.nav:hover h1 {opacity:1}
+	.nav .navtools {visibility:visible;}
+	.nav .navtree {visibility:visible;}
+}
+
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #ddd;
+	font-size: 13px;
+	line-height: 19px;
+	overflow: auto;
+	padding: 6px 10px;
+	border-radius: 3px;
+}
+
+/* header stylin */
+header h1 {margin: 0px; padding: 10px;}
+header h2 {margin: 0px; padding: 4px;}
+header h3 {margin: 0px; padding: 4px;}
+header h4 {margin: 0px; padding: 4px;}
+
+header h1.padding {padding: 0px;}
+header h1 {font-size: 30px; border-bottom: none; text-align: center;}
+header h2 {font-size: 15px; border-bottom: none; text-align: center;}
+header h3 {font-size: 15px; border-bottom: none; text-align: center;}
+header h4 {font-size: 15px; border-bottom: none; text-align: center;}
+header h1:before {content:""; min-width: 0px;}
+header h2:before {content:""; display: inline; }
+header h3:before {content:"";}
+header h4:before {content:"";}
+header h3.date {font-size: 10px; color: #ccc;}

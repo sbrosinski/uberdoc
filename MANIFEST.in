@@ -1,0 +1,5 @@
+graft uberdoc/templates 
+graft uberdoc/style
+graft uberdoc/sample
+include uberdoc/uberdoc.cfg
+include uberdoc/default_gitignore

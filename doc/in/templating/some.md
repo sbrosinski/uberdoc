@@ -1,0 +1,1 @@
+**This is a seperate markdown file *some.md* being included by the Templating Demo chapter**

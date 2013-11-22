@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html$if(lang)$ lang="$lang$"$endif$>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+$for(author-meta)$
+  <meta name="author" content="$author-meta$">
+$endfor$
+$if(date-meta)$
+  <meta name="dcterms.date" content="$date-meta$">
+$endif$
+  <title>$if(title-prefix)$$title-prefix$ - $endif$$pagetitle$</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+$if(quotes)$
+  <style type="text/css">q { quotes: "“" "”" "‘" "’"; }</style>
+$endif$
+$if(highlighting-css)$
+  <style type="text/css">
+$highlighting-css$
+  </style>
+$endif$
+  <link rel="stylesheet" href="style/jqtree.css"/>
+  <link rel="stylesheet" href="style/default.css" type="text/css" />
+$for(css)$
+  <link rel="stylesheet" href="$css$">
+$endfor$
+$if(math)$
+  $math$
+$endif$
+$for(header-includes)$
+  $header-includes$
+$endfor$
+   <script src="style/jquery-1.10.2.min.js"></script>
+   <script src="style/tree.jquery.js"></script>
+   <script src="style/default.js"></script>
+</head>
+<body>
+<div class="nav">
+<h1>Contents</h1>
+<div class="navtools">
+  <a href="#" id="nt-all"> + </a>|<a href="#" id="nt-none"> - </a>|<a href="#" id="nt-l1"> 1 </a>|<a href="#" id="nt-l2"> 2 </a>|<a href="#" id="nt-l3"> 3 </a>
+</div>
+<div class="navtree"></div>
+</div>
+$for(include-before)$
+$include-before$
+$endfor$
+$if(title)$
+<header>
+<h1 class="title">$title$</h1>
+$for(author)$
+<h2 class="author">$author$</h2>
+$endfor$
+
+<h3 class="date">$VERSION$</h3>
+
+</header>
+$endif$
+$if(toc)$
+<nav id="$idprefix$TOC">
+$toc$
+</nav>
+$endif$
+$body$
+$for(include-after)$
+$include-after$
+$endfor$
+</body>
+</html>

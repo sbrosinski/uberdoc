@@ -1,0 +1,6 @@
+out/
+venv
+.idea
+.coverage
+.Python
+.tox
