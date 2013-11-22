@@ -25,7 +25,7 @@ else:
     from termcolor import colored, cprint
 
 __author__ = "Stephan Brosinski"
-__version__ = "1.2"
+__version__ = "1.2.2"
 
 # todo
 # when reading vars from config file, reading from the user section should return only
